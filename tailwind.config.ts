@@ -7,6 +7,7 @@ const config: Config = {
       colors: {
         cream: "#FBF7F0",
         "cream-dim": "#F1E9DC",
+        blush: "#F4E1D8",
         ink: "#201C1A",
         pomegranate: {
           DEFAULT: "#7A1F2B",
