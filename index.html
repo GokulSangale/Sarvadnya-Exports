@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sarvadnya Exports</title>
+    <meta name="description" content="Sarvadnya Exports — landing redirect" />
+    <!-- Fallback redirect for simple landing behavior. -->
+    <meta http-equiv="refresh" content="2;url=/" />
+    <style>
+      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#FBF7F0;color:#1F3D2B}
+      .card{padding:24px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:520px;text-align:center}
+      a{color:#C8102E;text-decoration:none;margin:0 6px}
+      nav{margin-top:12px}
+      small{color:#555}
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Sarvadnya Exports</h1>
+      <p>Redirecting to the website home. If you are not redirected automatically, use the links below.</p>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/products">Products</a>
+        <a href="/gallery">Gallery</a>
+        <a href="/contact">Contact</a>
+      </nav>
+      <p><small>Tip: append ?page=about (or products, gallery, contact) to this URL to redirect directly.</small></p>
+    </div>
+
+    <script>
+      (function(){
+        // Map simple page keys to site routes
+        const map = { home: '/', about: '/about', products: '/products', gallery: '/gallery', contact: '/contact' };
+        const params = new URLSearchParams(location.search);
+        const page = (params.get('page') || '').toLowerCase();
+        if(page && map[page]){
+          // immediate replacement to avoid adding to history
+          location.replace(map[page]);
+          return;
+        }
+        // Support hash like #gallery
+        const hash = (location.hash || '').replace(/^#/, '').toLowerCase();
+        if(hash && map[hash]){
+          location.replace(map[hash]);
+          return;
+        }
+        // otherwise the meta refresh will navigate to home after 2s
+      })();
+    </script>
+  </body>
+</html>
