@@ -1,0 +1,39 @@
+name: Deploy static export to GitHub Pages
+
+on:
+  push:
+    branches: [ main, deployementChnages ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+        run: |
+          npm ci
+
+      - name: Build and export static site
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+        run: |
+          npm run export
+
+      - name: Deploy to GitHub Pages (gh-pages branch) with CNAME
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: gh-pages
+          cname: sarvadnyaexports.online
+          allow_empty_commit: true
