@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admin_users/$(request.auth.token.email));
+    }
+
+    // Public buyer inquiries: anyone can submit (create), nobody can read/update/delete
+    // from the client — only the admin dashboard (via an authenticated admin) or Cloud
+    // Functions (via the Admin SDK, which bypasses these rules) can manage leads.
+    match /buyer_leads/{leadId} {
+      allow create: if request.resource.data.keys().hasAll(
+          ['companyName', 'buyerName', 'country', 'email', 'phone', 'whatsapp',
+           'quantity', 'frequency', 'destinationPort', 'createdAt', 'status']
+        ) && request.resource.data.status == 'Unread';
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Only an already-provisioned admin document can read the allow-list; nothing
+    // client-side can create or modify admin_users.
+    match /admin_users/{email} {
+      allow read: if isSignedIn() && request.auth.token.email == email;
+      allow write: if false;
+    }
+
+    // Public read for site content; only admins can manage it.
+    match /gallery/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /testimonials/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /products/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
